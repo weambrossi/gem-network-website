@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import communityImage from './assets/images/community.jpeg'
 import connectionImage from './assets/images/connect.jpeg'
 import developmentImage from './assets/images/develop.jpeg'
@@ -6,6 +6,7 @@ import developmentImage from './assets/images/develop.jpeg'
 import aboutImage from './assets/images/about.jpeg'
 import gemMark from './assets/images/gem-mark.png'
 import gemPromoVideo from './assets/videos/GEM promo video.mov'
+import { supabase } from './lib/supabase'
 import './App.css'
 
 // To swap a panel's image, replace the import path above and reference it here.
@@ -83,13 +84,179 @@ const EXPERIENCES = [
   },
 ]
 
+const MEMBERSHIP_INTERESTS = [
+  'Community',
+  'Connection',
+  'Development',
+  'Events',
+  'Leadership',
+  'Other',
+]
+
+const INITIAL_FORM_DATA = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  interest: '',
+}
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 function App() {
   const [cardIndex, setCardIndex] = useState(0)
+  const [isMembershipVisible, setIsMembershipVisible] = useState(false)
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA)
+  const [fieldErrors, setFieldErrors] = useState({})
+  const [submitState, setSubmitState] = useState({
+    status: 'idle',
+    message: '',
+  })
+  const membershipRef = useRef(null)
   const cardCount = EXPERIENCES.length
   const nextCard = () => setCardIndex((i) => (i + 1) % cardCount)
   const prevCard = () =>
     setCardIndex((i) => (i - 1 + cardCount) % cardCount)
   const activeExperience = EXPERIENCES[cardIndex]
+
+  useEffect(() => {
+    const node = membershipRef.current
+
+    if (!node) {
+      return undefined
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsMembershipVisible(true)
+          observer.disconnect()
+        }
+      },
+      {
+        threshold: 0.2,
+        rootMargin: '0px 0px -40px 0px',
+      }
+    )
+
+    observer.observe(node)
+
+    return () => observer.disconnect()
+  }, [])
+
+  const validateForm = (values) => {
+    const errors = {}
+
+    if (!values.firstName.trim()) {
+      errors.firstName = 'First name is required.'
+    }
+
+    if (!values.lastName.trim()) {
+      errors.lastName = 'Last name is required.'
+    }
+
+    if (!values.email.trim()) {
+      errors.email = 'Email is required.'
+    } else if (!EMAIL_PATTERN.test(values.email.trim())) {
+      errors.email = 'Please enter a valid email address.'
+    }
+
+    if (!values.interest) {
+      errors.interest = 'Please select an interest.'
+    }
+
+    return errors
+  }
+
+  const handleChange = (event) => {
+    const { name, value } = event.target
+
+    setFormData((current) => ({
+      ...current,
+      [name]: value,
+    }))
+
+    setFieldErrors((current) => {
+      if (!current[name]) {
+        return current
+      }
+
+      const nextErrors = { ...current }
+      delete nextErrors[name]
+      return nextErrors
+    })
+
+    if (submitState.status !== 'idle') {
+      setSubmitState({
+        status: 'idle',
+        message: '',
+      })
+    }
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
+    const normalizedFormData = {
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      email: formData.email.trim().toLowerCase(),
+      interest: formData.interest,
+    }
+
+    const errors = validateForm(normalizedFormData)
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      setSubmitState({
+        status: 'error',
+        message: 'Please review the highlighted fields and try again.',
+      })
+      return
+    }
+
+    if (!supabase) {
+      setSubmitState({
+        status: 'error',
+        message:
+          'The application form is not configured yet. Add your Supabase URL and anon key to continue.',
+      })
+      return
+    }
+
+    setFieldErrors({})
+    setSubmitState({
+      status: 'loading',
+      message: '',
+    })
+
+    const { error } = await supabase.from('member_signups').insert({
+      first_name: normalizedFormData.firstName,
+      last_name: normalizedFormData.lastName,
+      email: normalizedFormData.email,
+      interest: normalizedFormData.interest,
+      source: 'landing_page',
+    })
+
+    if (error) {
+      const message =
+        error.code === '23505'
+          ? 'That email has already been submitted. If this is you, we already have your application.'
+          : 'Something went wrong while sending your application. Please try again in a moment.'
+
+      setSubmitState({
+        status: 'error',
+        message,
+      })
+      return
+    }
+
+    setFormData(INITIAL_FORM_DATA)
+    setSubmitState({
+      status: 'success',
+      message:
+        'Application received. Thank you for your interest in joining GEM.',
+    })
+  }
 
   return (
     <div className="page">
@@ -281,29 +448,139 @@ function App() {
         </div>
       </section>
 
-      <section className="membership" id="membership">
+      <section
+        ref={membershipRef}
+        className={`membership ${isMembershipVisible ? 'membership--visible' : ''}`}
+        id="membership"
+      >
         <div className="membership__inner">
           <p className="membership__eyebrow">Membership</p>
           <div className="membership__content">
-            <h2 className="membership__heading">
-              An intentionally small membership shaped by chemistry,
-              contribution, and presence.
-            </h2>
-            <div className="membership__body">
-              <p>
-                Applications are reviewed with an eye for generosity,
-                discretion, and the kind of energy that strengthens the room
-                for everyone already inside it.
-              </p>
-              <p>
-                Access remains limited by design so introductions stay personal,
-                gatherings stay thoughtful, and every opportunity feels
-                genuinely curated rather than mass-produced.
-              </p>
-            </div>
-            <p className="membership__note">
-              Applications are reviewed on a rolling basis.
-            </p>
+            <h2 className="membership__heading">Apply to be a GEM</h2>
+            <form className="membership-form" onSubmit={handleSubmit} noValidate>
+              <div className="membership-form__grid">
+                <label className="membership-form__field">
+                  <span className="sr-only">First Name</span>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    autoComplete="given-name"
+                    placeholder="First Name"
+                    aria-invalid={Boolean(fieldErrors.firstName)}
+                    aria-describedby={
+                      fieldErrors.firstName ? 'first-name-error' : undefined
+                    }
+                    required
+                  />
+                  {fieldErrors.firstName ? (
+                    <span
+                      className="membership-form__error"
+                      id="first-name-error"
+                    >
+                      {fieldErrors.firstName}
+                    </span>
+                  ) : null}
+                </label>
+
+                <label className="membership-form__field">
+                  <span className="sr-only">Last Name</span>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    autoComplete="family-name"
+                    placeholder="Last Name"
+                    aria-invalid={Boolean(fieldErrors.lastName)}
+                    aria-describedby={
+                      fieldErrors.lastName ? 'last-name-error' : undefined
+                    }
+                    required
+                  />
+                  {fieldErrors.lastName ? (
+                    <span
+                      className="membership-form__error"
+                      id="last-name-error"
+                    >
+                      {fieldErrors.lastName}
+                    </span>
+                  ) : null}
+                </label>
+
+                <label className="membership-form__field membership-form__field--full">
+                  <span className="sr-only">Email</span>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    autoComplete="email"
+                    inputMode="email"
+                    placeholder="Email"
+                    aria-invalid={Boolean(fieldErrors.email)}
+                    aria-describedby={
+                      fieldErrors.email ? 'email-error' : undefined
+                    }
+                    required
+                  />
+                  {fieldErrors.email ? (
+                    <span className="membership-form__error" id="email-error">
+                      {fieldErrors.email}
+                    </span>
+                  ) : null}
+                </label>
+
+                <label className="membership-form__field membership-form__field--full">
+                  <span className="sr-only">Interest</span>
+                  <select
+                    name="interest"
+                    value={formData.interest}
+                    onChange={handleChange}
+                    aria-invalid={Boolean(fieldErrors.interest)}
+                    aria-describedby={
+                      fieldErrors.interest ? 'interest-error' : undefined
+                    }
+                    required
+                  >
+                    <option value="">Interest</option>
+                    {MEMBERSHIP_INTERESTS.map((interest) => (
+                      <option key={interest} value={interest}>
+                        {interest}
+                      </option>
+                    ))}
+                  </select>
+                  {fieldErrors.interest ? (
+                    <span
+                      className="membership-form__error"
+                      id="interest-error"
+                    >
+                      {fieldErrors.interest}
+                    </span>
+                  ) : null}
+                </label>
+              </div>
+
+              <div className="membership-form__footer">
+                <button
+                  type="submit"
+                  className="membership-form__submit"
+                  disabled={submitState.status === 'loading'}
+                >
+                  {submitState.status === 'loading' ? 'Applying...' : 'Apply'}
+                </button>
+                {submitState.message ? (
+                  <p
+                    className={`membership-form__message membership-form__message--${submitState.status}`}
+                    role={submitState.status === 'error' ? 'alert' : 'status'}
+                    aria-live="polite"
+                  >
+                    {submitState.message}
+                  </p>
+                ) : null}
+              </div>
+            </form>
           </div>
         </div>
       </section>
