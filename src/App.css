@@ -380,86 +380,112 @@
 .experiences {
   position: relative;
   display: flex;
-  flex-direction: column;
-  background: rgba(244, 241, 234, 0.018);
-  border: 1px solid var(--border);
-  max-width: 1480px;
-  margin: 96px auto 120px;
-  padding: 88px 88px 0;
-  min-height: 760px;
+  align-items: stretch;
+  width: 100%;
+  min-height: 100svh;
   overflow: hidden;
 }
 
-.experiences::before {
-  content: '';
+.experiences__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.experiences__overlay {
   position: absolute;
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(
-      ellipse at 22% 14%,
-      rgba(0, 200, 255, 0.07) 0%,
-      transparent 45%
+    linear-gradient(
+      90deg,
+      rgba(6, 8, 12, 0.84) 0%,
+      rgba(6, 8, 12, 0.68) 32%,
+      rgba(6, 8, 12, 0.4) 58%,
+      rgba(6, 8, 12, 0.72) 100%
     ),
-    radial-gradient(
-      ellipse at 82% 88%,
-      rgba(138, 43, 255, 0.07) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      ellipse at 50% 50%,
-      rgba(27, 36, 33, 0.45) 0%,
-      transparent 70%
+    linear-gradient(
+      180deg,
+      rgba(3, 4, 8, 0.34) 0%,
+      rgba(3, 4, 8, 0.16) 36%,
+      rgba(3, 4, 8, 0.76) 100%
     );
-  z-index: 0;
+  z-index: 1;
 }
 
-.experiences::after {
-  content: '';
+.experiences__grain {
   position: absolute;
   inset: 0;
   pointer-events: none;
   opacity: 0.06;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  z-index: 1;
-}
-
-.experiences > * {
-  position: relative;
   z-index: 2;
 }
 
+.experiences__content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100svh;
+  width: 100%;
+  padding: 112px 72px 40px;
+}
+
 .experiences__intro {
-  max-width: 720px;
+  max-width: 760px;
+}
+
+.experiences__kicker {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.74);
+  margin: 0 0 22px;
 }
 
 .experiences__heading {
   font-family: var(--heading);
   font-weight: 500;
-  font-size: clamp(2.4rem, 5vw, 4.8rem);
-  line-height: 1;
+  font-size: clamp(3.2rem, 6vw, 6.4rem);
+  line-height: 0.96;
   letter-spacing: -0.02em;
   color: var(--text-h);
-  margin: 0 0 24px;
+  margin: 0 0 28px;
 }
 
-.experiences__lede {
+.experiences__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
   font-family: var(--sans);
-  font-size: 17px;
-  line-height: 1.6;
-  color: var(--text);
-  max-width: 60ch;
-  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.72);
+}
+
+.experiences__meta-dot {
+  width: 22px;
+  height: 1px;
+  background: rgba(244, 241, 234, 0.3);
 }
 
 .experiences__stage {
-  flex: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 96px 0;
-  text-align: center;
+  justify-content: flex-start;
+  flex: 1;
+  padding: 56px 0 120px;
 }
 
 .slide {
@@ -467,34 +493,13 @@
   animation: slideSwap 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-.slide__eyebrow {
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.42em;
-  text-transform: uppercase;
-  color: var(--accent-cyan);
-  opacity: 0.85;
-  margin: 0 0 32px;
-}
-
-.slide__title {
-  font-family: var(--heading);
-  font-weight: 500;
-  font-size: clamp(3rem, 6vw, 6rem);
-  line-height: 1.04;
-  letter-spacing: -0.02em;
-  color: var(--text-h);
-  margin: 0 0 28px;
-}
-
 .slide__body {
   font-family: var(--sans);
-  font-size: 18px;
-  line-height: 1.55;
-  color: var(--text);
-  max-width: 56ch;
-  margin: 0 auto;
+  font-size: 21px;
+  line-height: 1.7;
+  color: rgba(244, 241, 234, 0.88);
+  max-width: 34ch;
+  margin: 0;
 }
 
 @keyframes slideSwap {
@@ -510,20 +515,60 @@
   }
 }
 
-.experiences__footer {
+.experiences__actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 32px 0;
-  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 38px;
+}
+
+.experiences__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 22px;
+  border: 1px solid rgba(244, 241, 234, 0.28);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-h);
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.experiences__action--primary {
+  background: rgba(244, 241, 234, 0.14);
+}
+
+.experiences__action:hover,
+.experiences__action:focus-visible {
+  background: rgba(244, 241, 234, 0.22);
+  border-color: rgba(244, 241, 234, 0.5);
+  color: var(--text-h);
+}
+
+.experiences__action:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(244, 241, 234, 0.12);
 }
 
 .experiences__nav {
-  width: 56px;
-  height: 56px;
+  position: absolute;
+  bottom: 36px;
+  z-index: 4;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
-  border: 1px solid var(--border);
-  background: transparent;
+  border: 1px solid rgba(244, 241, 234, 0.28);
+  background: rgba(6, 8, 12, 0.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: var(--text-h);
   display: grid;
   place-items: center;
@@ -534,24 +579,37 @@
     transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
+.experiences__nav--prev {
+  left: 36px;
+}
+
+.experiences__nav--next {
+  right: 36px;
+}
+
 .experiences__nav svg {
   width: 18px;
   height: 18px;
 }
 
 .experiences__nav:hover {
-  border-color: rgba(0, 200, 255, 0.5);
-  background: rgba(244, 241, 234, 0.04);
+  border-color: rgba(244, 241, 234, 0.58);
+  background: rgba(244, 241, 234, 0.08);
   transform: scale(1.05);
 }
 
 .experiences__nav:focus-visible {
   outline: none;
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 0 3px rgba(0, 200, 255, 0.2);
+  border-color: rgba(244, 241, 234, 0.65);
+  box-shadow: 0 0 0 3px rgba(244, 241, 234, 0.14);
 }
 
 .experiences__counter {
+  position: absolute;
+  left: 50%;
+  bottom: 54px;
+  transform: translateX(-50%);
+  z-index: 4;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -720,18 +778,37 @@
   }
 
   .experiences {
-    margin: 64px 24px 96px;
-    padding: 64px 56px 0;
-    min-height: 640px;
+    min-height: 100svh;
   }
 
-  .experiences__stage {
-    padding: 72px 0;
+  .experiences__content {
+    padding: 104px 56px 36px;
+  }
+
+  .experiences__heading {
+    font-size: clamp(2.8rem, 5.2vw, 5rem);
+  }
+
+  .slide__body {
+    font-size: 19px;
   }
 
   .experiences__nav {
-    width: 50px;
-    height: 50px;
+    width: 52px;
+    height: 52px;
+    bottom: 28px;
+  }
+
+  .experiences__nav--prev {
+    left: 28px;
+  }
+
+  .experiences__nav--next {
+    right: 28px;
+  }
+
+  .experiences__counter {
+    bottom: 42px;
   }
 }
 
@@ -865,41 +942,62 @@
   }
 
   .experiences {
-    margin: 48px 16px 72px;
-    padding: 48px 28px 0;
-    min-height: 0;
+    min-height: 100svh;
+  }
+
+  .experiences__content {
+    min-height: 100svh;
+    padding: 88px 20px 24px;
   }
 
   .experiences__heading {
-    font-size: clamp(2rem, 9vw, 3rem);
-  }
-
-  .experiences__lede {
-    font-size: 15px;
+    font-size: clamp(2.3rem, 11vw, 3.5rem);
   }
 
   .experiences__stage {
-    padding: 56px 0;
+    align-items: flex-start;
+    padding: 40px 0 116px;
   }
 
-  .slide__title {
-    font-size: clamp(2.4rem, 11vw, 3.6rem);
+  .experiences__meta {
+    gap: 10px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
   }
 
   .slide__body {
-    font-size: 15px;
+    font-size: 16px;
+    max-width: 30ch;
+  }
+
+  .experiences__actions {
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .experiences__action {
+    min-height: 42px;
+    padding: 0 18px;
+    font-size: 10px;
+    letter-spacing: 0.18em;
   }
 
   .experiences__nav {
     width: 44px;
     height: 44px;
+    bottom: 22px;
   }
 
-  .experiences__footer {
-    padding: 24px 0;
+  .experiences__nav--prev {
+    left: 20px;
+  }
+
+  .experiences__nav--next {
+    right: 20px;
   }
 
   .experiences__counter {
+    bottom: 34px;
     font-size: 11px;
     gap: 10px;
   }

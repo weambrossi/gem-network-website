@@ -5,6 +5,7 @@ import developmentImage from './assets/images/develop.jpeg'
 // To swap the About image, drop a new file in src/assets/images/ and update this import.
 import aboutImage from './assets/images/about.jpeg'
 import gemMark from './assets/images/gem-mark.png'
+import gemPromoVideo from './assets/videos/GEM promo video.mov'
 import './App.css'
 
 // To swap a panel's image, replace the import path above and reference it here.
@@ -35,36 +36,60 @@ const HERO_PANELS = [
   },
 ]
 
-const MEMBERSHIP_CARDS = [
+const EXPERIENCES = [
   {
     eyebrow: 'Access',
     title: 'Private Gatherings',
-    body: 'Small-format dinners, socials, and events built around real conversation.',
+    role: 'Member Access',
+    date: 'Year-round programming',
+    description:
+      'Small-format dinners, socials, and evenings built around real conversation, strong chemistry, and the kind of atmosphere that makes showing up feel effortless.',
+    primaryAction: { label: 'Become a member', href: '#membership' },
+    secondaryAction: { label: 'Our mission', href: '#about' },
+    video: `${gemPromoVideo}#private-gatherings`,
   },
   {
     eyebrow: 'Introductions',
     title: 'Curated Introductions',
-    body: 'Intentional connections between members with shared interests, goals, or circles.',
+    role: 'Relationship Design',
+    date: 'Personal and ongoing',
+    description:
+      'Intentional introductions between members with shared interests, complementary goals, and real potential for friendship, collaboration, or long-term alignment.',
+    primaryAction: { label: 'Become a member', href: '#membership' },
+    secondaryAction: { label: 'View experiences', href: '#experiences' },
+    video: `${gemPromoVideo}#curated-introductions`,
   },
   {
     eyebrow: 'Events',
     title: 'Member Events',
-    body: 'Access to invite-only experiences, cultural nights, launches, and community meetups.',
+    role: 'Cultural Programming',
+    date: 'Seasonal calendar',
+    description:
+      'Access to invite-only experiences, cultural nights, launches, and community moments designed to feel elevated, social, and genuinely worth remembering.',
+    primaryAction: { label: 'View experiences', href: '#experiences' },
+    secondaryAction: { label: 'Become a member', href: '#membership' },
+    video: `${gemPromoVideo}#member-events`,
   },
   {
     eyebrow: 'Community',
     title: 'The Social Layer',
-    body: 'A private space to discover who is going, what is happening, and where the community is gathering.',
+    role: 'Private Network',
+    date: 'Always on',
+    description:
+      'A private layer for discovering who is gathering, what is happening next, and how the wider community is moving between in-person moments.',
+    primaryAction: { label: 'Our mission', href: '#about' },
+    secondaryAction: { label: 'Become a member', href: '#membership' },
+    video: `${gemPromoVideo}#social-layer`,
   },
 ]
 
 function App() {
   const [cardIndex, setCardIndex] = useState(0)
-  const cardCount = MEMBERSHIP_CARDS.length
+  const cardCount = EXPERIENCES.length
   const nextCard = () => setCardIndex((i) => (i + 1) % cardCount)
   const prevCard = () =>
     setCardIndex((i) => (i - 1 + cardCount) % cardCount)
-  const card = MEMBERSHIP_CARDS[cardIndex]
+  const activeExperience = EXPERIENCES[cardIndex]
 
   return (
     <div className="page">
@@ -161,27 +186,56 @@ function App() {
       </section>
 
       <section className="experiences" id="experiences">
-        <header className="experiences__intro">
-          <h2 className="experiences__heading">Experiences</h2>
-          <p className="experiences__lede">
-            Membership is more than access to a network. It is entry into
-            curated rooms, thoughtful introductions, and shared moments
-            designed to make connection feel natural again.
-          </p>
-        </header>
+        <video
+          key={activeExperience.video}
+          className="experiences__video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+        >
+          <source src={activeExperience.video} />
+        </video>
+        <div className="experiences__overlay" aria-hidden="true" />
+        <div className="experiences__grain" aria-hidden="true" />
 
-        <div className="experiences__stage">
-          <article key={cardIndex} className="slide">
-            <p className="slide__eyebrow">{card.eyebrow}</p>
-            <h3 className="slide__title">{card.title}</h3>
-            <p className="slide__body">{card.body}</p>
-          </article>
-        </div>
+        <div className="experiences__content">
+          <header className="experiences__intro">
+            <p className="experiences__kicker">Experiences</p>
+            <h2 className="experiences__heading">{activeExperience.title}</h2>
+            <div className="experiences__meta">
+              <span>{activeExperience.eyebrow}</span>
+              <span className="experiences__meta-dot" aria-hidden="true" />
+              <span>{activeExperience.role}</span>
+              <span className="experiences__meta-dot" aria-hidden="true" />
+              <span>{activeExperience.date}</span>
+            </div>
+          </header>
 
-        <footer className="experiences__footer">
+          <div className="experiences__stage">
+            <article key={cardIndex} className="slide">
+              <p className="slide__body">{activeExperience.description}</p>
+              <div className="experiences__actions">
+                <a
+                  className="experiences__action experiences__action--primary"
+                  href={activeExperience.primaryAction.href}
+                >
+                  {activeExperience.primaryAction.label}
+                </a>
+                <a
+                  className="experiences__action experiences__action--secondary"
+                  href={activeExperience.secondaryAction.href}
+                >
+                  {activeExperience.secondaryAction.label}
+                </a>
+              </div>
+            </article>
+          </div>
+
           <button
             type="button"
-            className="experiences__nav"
+            className="experiences__nav experiences__nav--prev"
             onClick={prevCard}
             aria-label="Previous experience"
           >
@@ -209,7 +263,7 @@ function App() {
           </p>
           <button
             type="button"
-            className="experiences__nav"
+            className="experiences__nav experiences__nav--next"
             onClick={nextCard}
             aria-label="Next experience"
           >
@@ -224,7 +278,7 @@ function App() {
               />
             </svg>
           </button>
-        </footer>
+        </div>
       </section>
 
       <section className="membership" id="membership">
