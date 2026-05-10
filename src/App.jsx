@@ -2,6 +2,9 @@ import { useState } from 'react'
 import communityImage from './assets/images/community.jpeg'
 import connectionImage from './assets/images/connect.jpeg'
 import developmentImage from './assets/images/develop.jpeg'
+// To swap the About image, drop a new file in src/assets/images/ and update this import.
+import aboutImage from './assets/images/about.jpeg'
+import gemMark from './assets/images/gem-mark.png'
 import './App.css'
 
 // To swap a panel's image, replace the import path above and reference it here.
@@ -67,8 +70,15 @@ function App() {
     <div className="page">
       <header className="nav">
         <a className="brand" href="#hero" aria-label="GEM Social Club">
-          <span className="brand__name">GEM</span>
-          <span className="brand__tag">Social Club</span>
+          <span className="brand__copy">
+            <span className="brand__name">GEM</span>
+            <span className="brand__tag">Social Club</span>
+          </span>
+          <span
+            className="brand__icon"
+            style={{ '--brand-icon': `url(${gemMark})` }}
+            aria-hidden="true"
+          />
         </a>
       </header>
 
@@ -120,22 +130,32 @@ function App() {
 
       <section className="about" id="about">
         <div className="about__inner">
-          <p className="about__eyebrow">About</p>
-          <h2 className="about__heading">
-            A members-only social club for builders, thinkers, and quiet
-            tastemakers.
-          </h2>
-          <div className="about__body">
-            <p>
-              GEM is an invite-only network for people who care about the craft
-              of what they make and the company they keep. We host intimate
-              dinners, salons, and quiet rooms — online and off — where ideas
-              move faster because trust is already there.
-            </p>
-            <p>
-              Membership is curated, not sold. If we know you, we&rsquo;ll find
-              you.
-            </p>
+          <div className="about__media">
+            <p className="about__eyebrow">About</p>
+            <img
+              className="about__image"
+              src={aboutImage}
+              alt=""
+              loading="lazy"
+            />
+          </div>
+          <div className="about__copy">
+            <h2 className="about__heading">
+              A community that shines brighter together.
+            </h2>
+            <div className="about__body">
+              <p>
+                <span className="about__lead">Everyone is a GEM.</span>
+                At The Gem Network, we believe every person is a gem, shaped
+                by unique experiences, full of value, and deserving of spaces
+                where they can connect, grow, and let their shine be seen.
+              </p>
+              <p className="about__closing">
+                We host private gatherings, facilitate thoughtful
+                introductions, and create moments designed to foster meaningful
+                relationships and personal growth.
+              </p>
+            </div>
           </div>
         </div>
       </section>
