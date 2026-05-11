@@ -6,7 +6,7 @@ import developmentImage from './assets/images/develop.jpeg'
 import aboutImage from './assets/images/about.jpeg'
 import gemMark from './assets/images/gem-mark.png'
 import gemPromoVideo from './assets/videos/GEM promo video.mov'
-import { supabase } from './lib/supabase'
+import { supabase, supabaseConfigError } from './lib/supabase'
 import './App.css'
 
 // To swap a panel's image, replace the import path above and reference it here.
@@ -218,6 +218,7 @@ function App() {
       setSubmitState({
         status: 'error',
         message:
+          supabaseConfigError ||
           'The application form is not configured yet. Add your Supabase URL and anon key to continue.',
       })
       return
@@ -456,7 +457,15 @@ function App() {
         <div className="membership__inner">
           <p className="membership__eyebrow">Membership</p>
           <div className="membership__content">
-            <h2 className="membership__heading">Apply to be a GEM</h2>
+            <span
+              className="membership__mark"
+              style={{ '--brand-icon': `url(${gemMark})` }}
+              aria-hidden="true"
+            />
+            <h2 className="membership__heading">Stay in Touch</h2>
+            <p className="membership__subheading">
+              Signup for our newsletters and upcoming GEM events
+            </p>
             <form className="membership-form" onSubmit={handleSubmit} noValidate>
               <div className="membership-form__grid">
                 <label className="membership-form__field">

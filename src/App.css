@@ -663,6 +663,25 @@
   justify-items: center;
 }
 
+.membership__mark {
+  width: 76px;
+  height: 76px;
+  background: rgba(21, 18, 15, 0.92);
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 700ms ease 40ms,
+    transform 700ms ease 40ms;
+  mask-image: var(--brand-icon);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-image: var(--brand-icon);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
 .membership__heading {
   font-family: var(--heading);
   font-size: clamp(2.2rem, 4.4vw, 3.9rem);
@@ -678,6 +697,22 @@
     transform 700ms ease;
 }
 
+.membership__subheading {
+  margin: -12px 0 0;
+  max-width: 34ch;
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  color: rgba(21, 18, 15, 0.72);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 700ms ease 80ms,
+    transform 700ms ease 80ms;
+}
+
 .membership-form {
   display: grid;
   gap: 20px;
@@ -690,7 +725,9 @@
     transform 700ms ease 120ms;
 }
 
+.membership--visible .membership__mark,
 .membership--visible .membership__heading,
+.membership--visible .membership__subheading,
 .membership--visible .membership-form {
   opacity: 1;
   transform: translateY(0);
@@ -928,6 +965,11 @@
     justify-items: center;
   }
 
+  .membership__mark {
+    width: 70px;
+    height: 70px;
+  }
+
   .experiences {
     min-height: 100svh;
   }
@@ -1158,6 +1200,16 @@
     max-width: 10ch;
   }
 
+  .membership__subheading {
+    margin-top: -8px;
+    font-size: 14px;
+  }
+
+  .membership__mark {
+    width: 62px;
+    height: 62px;
+  }
+
   .membership-form {
     max-width: 100%;
   }
@@ -1187,7 +1239,9 @@
   .hero-panel::before,
   .hero-panel__title,
   .hero-panel__description,
+  .membership__mark,
   .membership__heading,
+  .membership__subheading,
   .membership-form {
     transition: none !important;
     transform: none !important;
