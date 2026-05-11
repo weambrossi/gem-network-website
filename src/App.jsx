@@ -35,50 +35,18 @@ const HERO_PANELS = [
   },
 ]
 
-const EXPERIENCES = [
+const EXPERIENCE_MEDIA = [
   {
-    eyebrow: 'Access',
-    title: 'Private Gatherings',
-    role: 'Member Access',
-    date: 'Year-round programming',
-    description:
-      'Small-format dinners, socials, and evenings built around real conversation, strong chemistry, and the kind of atmosphere that makes showing up feel effortless.',
-    primaryAction: { label: 'Become a member', href: '#membership' },
-    secondaryAction: { label: 'Our mission', href: '#about' },
-    video: `${gemPromoVideo}#private-gatherings`,
+    src: communityImage,
+    alt: 'Members gathered together at a GEM community event.',
   },
   {
-    eyebrow: 'Introductions',
-    title: 'Curated Introductions',
-    role: 'Relationship Design',
-    date: 'Personal and ongoing',
-    description:
-      'Intentional introductions between members with shared interests, complementary goals, and real potential for friendship, collaboration, or long-term alignment.',
-    primaryAction: { label: 'Become a member', href: '#membership' },
-    secondaryAction: { label: 'View experiences', href: '#experiences' },
-    video: `${gemPromoVideo}#curated-introductions`,
+    src: connectionImage,
+    alt: 'Members connecting during a GEM experience.',
   },
   {
-    eyebrow: 'Events',
-    title: 'Member Events',
-    role: 'Cultural Programming',
-    date: 'Seasonal calendar',
-    description:
-      'Access to invite-only experiences, cultural nights, launches, and community moments designed to feel elevated, social, and genuinely worth remembering.',
-    primaryAction: { label: 'View experiences', href: '#experiences' },
-    secondaryAction: { label: 'Become a member', href: '#membership' },
-    video: `${gemPromoVideo}#member-events`,
-  },
-  {
-    eyebrow: 'Community',
-    title: 'The Social Layer',
-    role: 'Private Network',
-    date: 'Always on',
-    description:
-      'A private layer for discovering who is gathering, what is happening next, and how the wider community is moving between in-person moments.',
-    primaryAction: { label: 'Our mission', href: '#about' },
-    secondaryAction: { label: 'Become a member', href: '#membership' },
-    video: `${gemPromoVideo}#social-layer`,
+    src: developmentImage,
+    alt: 'Members enjoying a GEM event together.',
   },
 ]
 
@@ -101,7 +69,7 @@ const INITIAL_FORM_DATA = {
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function App() {
-  const [cardIndex, setCardIndex] = useState(0)
+  const [carouselIndex, setCarouselIndex] = useState(0)
   const [isMembershipVisible, setIsMembershipVisible] = useState(false)
   const [isAboutVisible, setIsAboutVisible] = useState(false)
   const [formData, setFormData] = useState(INITIAL_FORM_DATA)
@@ -112,11 +80,7 @@ function App() {
   })
   const membershipRef = useRef(null)
   const aboutRef = useRef(null)
-  const cardCount = EXPERIENCES.length
-  const nextCard = () => setCardIndex((i) => (i + 1) % cardCount)
-  const prevCard = () =>
-    setCardIndex((i) => (i - 1 + cardCount) % cardCount)
-  const activeExperience = EXPERIENCES[cardIndex]
+  const activeExperienceImage = EXPERIENCE_MEDIA[carouselIndex]
 
   useEffect(() => {
     const node = membershipRef.current
@@ -351,7 +315,7 @@ function App() {
           </h2>
           <div className="about__content">
             <p className="about__statement">
-              <span className="about__statement-line">Everyone is a Gem.</span>{' '}
+              <span className="about__statement-line">Everyone is a Gem.</span>
               <span className="about__statement-line about__statement-line--accent">
                 Let it shine.
               </span>
@@ -366,98 +330,67 @@ function App() {
       </section>
 
       <section className="experiences" id="experiences">
-        <video
-          key={activeExperience.video}
-          className="experiences__video"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-        >
-          <source src={activeExperience.video} />
-        </video>
-        <div className="experiences__overlay" aria-hidden="true" />
-        <div className="experiences__grain" aria-hidden="true" />
-
         <div className="experiences__content">
-          <header className="experiences__intro">
-            <p className="experiences__kicker">Experiences</p>
-            <h2 className="experiences__heading">{activeExperience.title}</h2>
-            <div className="experiences__meta">
-              <span>{activeExperience.eyebrow}</span>
-              <span className="experiences__meta-dot" aria-hidden="true" />
-              <span>{activeExperience.role}</span>
-              <span className="experiences__meta-dot" aria-hidden="true" />
-              <span>{activeExperience.date}</span>
-            </div>
-          </header>
-
-          <div className="experiences__stage">
-            <article key={cardIndex} className="slide">
-              <p className="slide__body">{activeExperience.description}</p>
-              <div className="experiences__actions">
-                <a
-                  className="experiences__action experiences__action--primary"
-                  href={activeExperience.primaryAction.href}
-                >
-                  {activeExperience.primaryAction.label}
-                </a>
-                <a
-                  className="experiences__action experiences__action--secondary"
-                  href={activeExperience.secondaryAction.href}
-                >
-                  {activeExperience.secondaryAction.label}
-                </a>
+          <div className="experiences__media-grid">
+            <article className="experiences__panel experiences__panel--carousel">
+              <div
+                className="experiences__pagination"
+                aria-label="Experience image carousel"
+              >
+                {EXPERIENCE_MEDIA.map((item, index) => (
+                  <button
+                    key={item.src}
+                    type="button"
+                    aria-pressed={carouselIndex === index}
+                    aria-label={`Show experience image ${index + 1}`}
+                    className={`experiences__pagination-button ${
+                      carouselIndex === index
+                        ? 'experiences__pagination-button--active'
+                        : ''
+                    }`}
+                    onClick={() => setCarouselIndex(index)}
+                  >
+                    {String(index + 1).padStart(2, '0')}
+                  </button>
+                ))}
               </div>
+              <img
+                key={activeExperienceImage.src}
+                className="experiences__image"
+                src={activeExperienceImage.src}
+                alt={activeExperienceImage.alt}
+                loading="lazy"
+              />
+              <div className="experiences__panel-overlay" aria-hidden="true" />
+              <p className="experiences__panel-label">Work hard.</p>
+            </article>
+
+            <article className="experiences__panel experiences__panel--video">
+              <video
+                className="experiences__video"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+              >
+                <source src={gemPromoVideo} />
+              </video>
+              <div className="experiences__panel-overlay" aria-hidden="true" />
+              <p className="experiences__panel-label">Play hard.</p>
             </article>
           </div>
 
-          <button
-            type="button"
-            className="experiences__nav experiences__nav--prev"
-            onClick={prevCard}
-            aria-label="Previous experience"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M15 6l-6 6 6 6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          <p
-            className="experiences__counter"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            <span>{String(cardIndex + 1).padStart(2, '0')}</span>
-            <span className="experiences__counter-slash" aria-hidden="true">
-              /
-            </span>
-            <span>{String(cardCount).padStart(2, '0')}</span>
-          </p>
-          <button
-            type="button"
-            className="experiences__nav experiences__nav--next"
-            onClick={nextCard}
-            aria-label="Next experience"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M9 6l6 6-6 6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+          <div className="experiences__editorial">
+            <p className="experiences__kicker">Experiences</p>
+            <p className="experiences__body">
+              From ambitious days to unforgettable nights, GEM creates
+              experiences that move naturally between growth, culture, and
+              connection. Members gather through private events, thoughtful
+              introductions, and elevated moments designed to feel social,
+              energizing, and genuinely worth showing up for.
+            </p>
+          </div>
         </div>
       </section>
 
