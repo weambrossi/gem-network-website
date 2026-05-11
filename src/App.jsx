@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import communityImage from './assets/images/community.jpeg'
 import connectionImage from './assets/images/connect.jpeg'
 import developmentImage from './assets/images/develop.jpeg'
-// To swap the About image, drop a new file in src/assets/images/ and update this import.
-import aboutImage from './assets/images/about.jpeg'
 import gemMark from './assets/images/gem-mark.png'
 import gemPromoVideo from './assets/videos/GEM promo video.mov'
 import { supabase, supabaseConfigError } from './lib/supabase'
@@ -84,13 +82,6 @@ const EXPERIENCES = [
   },
 ]
 
-const ABOUT_SLIDES = [
-  { src: communityImage, caption: 'Private gatherings, with purpose.' },
-  { src: connectionImage, caption: 'Introductions made with intention.' },
-  { src: developmentImage, caption: 'Rooms built for personal growth.' },
-  { src: aboutImage, caption: 'Every person, a Gem.' },
-]
-
 const MEMBERSHIP_INTERESTS = [
   'Community',
   'Connection',
@@ -112,7 +103,6 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 function App() {
   const [cardIndex, setCardIndex] = useState(0)
   const [isMembershipVisible, setIsMembershipVisible] = useState(false)
-  const [aboutSlide, setAboutSlide] = useState(0)
   const [isAboutVisible, setIsAboutVisible] = useState(false)
   const [formData, setFormData] = useState(INITIAL_FORM_DATA)
   const [fieldErrors, setFieldErrors] = useState({})
@@ -122,7 +112,6 @@ function App() {
   })
   const membershipRef = useRef(null)
   const aboutRef = useRef(null)
-  const aboutSlideCount = ABOUT_SLIDES.length
   const cardCount = EXPERIENCES.length
   const nextCard = () => setCardIndex((i) => (i + 1) % cardCount)
   const prevCard = () =>
@@ -165,25 +154,12 @@ function App() {
           observer.disconnect()
         }
       },
-      { threshold: 0.18, rootMargin: '0px 0px -40px 0px' }
+      { threshold: 0.25, rootMargin: '0px 0px -60px 0px' }
     )
 
     observer.observe(node)
     return () => observer.disconnect()
   }, [])
-
-  useEffect(() => {
-    const mql =
-      typeof window !== 'undefined' && window.matchMedia
-        ? window.matchMedia('(prefers-reduced-motion: reduce)')
-        : null
-    if (mql && mql.matches) return undefined
-
-    const id = setInterval(() => {
-      setAboutSlide((i) => (i + 1) % aboutSlideCount)
-    }, 6500)
-    return () => clearInterval(id)
-  }, [aboutSlideCount])
 
   const validateForm = (values) => {
     const errors = {}
@@ -369,96 +345,23 @@ function App() {
         ref={aboutRef}
       >
         <div className="about__inner">
-          <header className="about__header">
-            <p className="about__eyebrow">About</p>
-            <span className="about__rule" aria-hidden="true" />
-          </header>
-
-          <div className="about__grid">
-            <figure className="about__media">
-              <div className="about__frame">
-                {ABOUT_SLIDES.map((slide, i) => (
-                  <img
-                    key={slide.src}
-                    src={slide.src}
-                    alt=""
-                    loading="lazy"
-                    className={`about__slide${
-                      i === aboutSlide ? ' about__slide--active' : ''
-                    }`}
-                  />
-                ))}
-                <div className="about__frame-overlay" aria-hidden="true" />
-                <figcaption className="about__caption">
-                  {ABOUT_SLIDES[aboutSlide].caption}
-                </figcaption>
-              </div>
-              <div
-                className="about__indicators"
-                role="tablist"
-                aria-label="About slides"
-              >
-                {ABOUT_SLIDES.map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    role="tab"
-                    aria-selected={i === aboutSlide}
-                    aria-label={`Show slide ${i + 1}`}
-                    className={`about__indicator${
-                      i === aboutSlide ? ' about__indicator--active' : ''
-                    }`}
-                    onClick={() => setAboutSlide(i)}
-                  >
-                    {String(i + 1).padStart(2, '0')}
-                  </button>
-                ))}
-              </div>
-            </figure>
-
-            <div className="about__copy">
-              <h2 className="about__heading">
-                A community that shines
-                <br />
-                brighter together.
-              </h2>
-              <p className="about__sub">Every person is a Gem.</p>
-              <p className="about__body-text">
-                The Gem Network creates intentional spaces for people to
-                connect, grow, and be seen. Through private gatherings,
-                curated introductions, and shared experiences, we bring
-                together people who value meaningful relationships over
-                surface-level networking.
-              </p>
-              <p className="about__emphasis">
-                Less networking. More belonging.
-              </p>
-            </div>
+          <h2 className="about__heading">
+            <span className="about__heading-line">Our</span>
+            <span className="about__heading-line">Mission</span>
+          </h2>
+          <div className="about__content">
+            <p className="about__statement">
+              <span className="about__statement-line">Everyone is a Gem.</span>{' '}
+              <span className="about__statement-line about__statement-line--accent">
+                Let it shine.
+              </span>
+            </p>
+            <p className="about__body">
+              A community where ambition meets authenticity — built for
+              people who value real connection over surface-level
+              networking.
+            </p>
           </div>
-
-          <ul className="about__pillars">
-            <li className="about__pillar">
-              <span className="about__pillar-num">01</span>
-              <h3 className="about__pillar-title">Community</h3>
-              <p className="about__pillar-body">
-                Private gatherings with purpose.
-              </p>
-            </li>
-            <li className="about__pillar">
-              <span className="about__pillar-num">02</span>
-              <h3 className="about__pillar-title">Connection</h3>
-              <p className="about__pillar-body">
-                Introductions that feel intentional.
-              </p>
-            </li>
-            <li className="about__pillar">
-              <span className="about__pillar-num">03</span>
-              <h3 className="about__pillar-title">Development</h3>
-              <p className="about__pillar-body">
-                Spaces built for personal growth.
-              </p>
-            </li>
-          </ul>
         </div>
       </section>
 
