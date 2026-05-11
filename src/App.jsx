@@ -84,6 +84,13 @@ const EXPERIENCES = [
   },
 ]
 
+const ABOUT_SLIDES = [
+  { src: communityImage, caption: 'Private gatherings, with purpose.' },
+  { src: connectionImage, caption: 'Introductions made with intention.' },
+  { src: developmentImage, caption: 'Rooms built for personal growth.' },
+  { src: aboutImage, caption: 'Every person, a Gem.' },
+]
+
 const MEMBERSHIP_INTERESTS = [
   'Community',
   'Connection',
@@ -105,6 +112,8 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 function App() {
   const [cardIndex, setCardIndex] = useState(0)
   const [isMembershipVisible, setIsMembershipVisible] = useState(false)
+  const [aboutSlide, setAboutSlide] = useState(0)
+  const [isAboutVisible, setIsAboutVisible] = useState(false)
   const [formData, setFormData] = useState(INITIAL_FORM_DATA)
   const [fieldErrors, setFieldErrors] = useState({})
   const [submitState, setSubmitState] = useState({
@@ -112,6 +121,8 @@ function App() {
     message: '',
   })
   const membershipRef = useRef(null)
+  const aboutRef = useRef(null)
+  const aboutSlideCount = ABOUT_SLIDES.length
   const cardCount = EXPERIENCES.length
   const nextCard = () => setCardIndex((i) => (i + 1) % cardCount)
   const prevCard = () =>
@@ -142,6 +153,37 @@ function App() {
 
     return () => observer.disconnect()
   }, [])
+
+  useEffect(() => {
+    const node = aboutRef.current
+    if (!node) return undefined
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsAboutVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.18, rootMargin: '0px 0px -40px 0px' }
+    )
+
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const mql =
+      typeof window !== 'undefined' && window.matchMedia
+        ? window.matchMedia('(prefers-reduced-motion: reduce)')
+        : null
+    if (mql && mql.matches) return undefined
+
+    const id = setInterval(() => {
+      setAboutSlide((i) => (i + 1) % aboutSlideCount)
+    }, 6500)
+    return () => clearInterval(id)
+  }, [aboutSlideCount])
 
   const validateForm = (values) => {
     const errors = {}
@@ -321,35 +363,102 @@ function App() {
         </div>
       </main>
 
-      <section className="about" id="about">
+      <section
+        className={`about${isAboutVisible ? ' about--visible' : ''}`}
+        id="about"
+        ref={aboutRef}
+      >
         <div className="about__inner">
-          <div className="about__media">
+          <header className="about__header">
             <p className="about__eyebrow">About</p>
-            <img
-              className="about__image"
-              src={aboutImage}
-              alt=""
-              loading="lazy"
-            />
-          </div>
-          <div className="about__copy">
-            <h2 className="about__heading">
-              A community that shines brighter together.
-            </h2>
-            <div className="about__body">
-              <p>
-                <span className="about__lead">Everyone is a GEM.</span>
-                At The Gem Network, we believe every person is a gem, shaped
-                by unique experiences, full of value, and deserving of spaces
-                where they can connect, grow, and let their shine be seen.
+            <span className="about__rule" aria-hidden="true" />
+          </header>
+
+          <div className="about__grid">
+            <figure className="about__media">
+              <div className="about__frame">
+                {ABOUT_SLIDES.map((slide, i) => (
+                  <img
+                    key={slide.src}
+                    src={slide.src}
+                    alt=""
+                    loading="lazy"
+                    className={`about__slide${
+                      i === aboutSlide ? ' about__slide--active' : ''
+                    }`}
+                  />
+                ))}
+                <div className="about__frame-overlay" aria-hidden="true" />
+                <figcaption className="about__caption">
+                  {ABOUT_SLIDES[aboutSlide].caption}
+                </figcaption>
+              </div>
+              <div
+                className="about__indicators"
+                role="tablist"
+                aria-label="About slides"
+              >
+                {ABOUT_SLIDES.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    role="tab"
+                    aria-selected={i === aboutSlide}
+                    aria-label={`Show slide ${i + 1}`}
+                    className={`about__indicator${
+                      i === aboutSlide ? ' about__indicator--active' : ''
+                    }`}
+                    onClick={() => setAboutSlide(i)}
+                  >
+                    {String(i + 1).padStart(2, '0')}
+                  </button>
+                ))}
+              </div>
+            </figure>
+
+            <div className="about__copy">
+              <h2 className="about__heading">
+                A community that shines
+                <br />
+                brighter together.
+              </h2>
+              <p className="about__sub">Every person is a Gem.</p>
+              <p className="about__body-text">
+                The Gem Network creates intentional spaces for people to
+                connect, grow, and be seen. Through private gatherings,
+                curated introductions, and shared experiences, we bring
+                together people who value meaningful relationships over
+                surface-level networking.
               </p>
-              <p className="about__closing">
-                We host private gatherings, facilitate thoughtful
-                introductions, and create moments designed to foster meaningful
-                relationships and personal growth.
+              <p className="about__emphasis">
+                Less networking. More belonging.
               </p>
             </div>
           </div>
+
+          <ul className="about__pillars">
+            <li className="about__pillar">
+              <span className="about__pillar-num">01</span>
+              <h3 className="about__pillar-title">Community</h3>
+              <p className="about__pillar-body">
+                Private gatherings with purpose.
+              </p>
+            </li>
+            <li className="about__pillar">
+              <span className="about__pillar-num">02</span>
+              <h3 className="about__pillar-title">Connection</h3>
+              <p className="about__pillar-body">
+                Introductions that feel intentional.
+              </p>
+            </li>
+            <li className="about__pillar">
+              <span className="about__pillar-num">03</span>
+              <h3 className="about__pillar-title">Development</h3>
+              <p className="about__pillar-body">
+                Spaces built for personal growth.
+              </p>
+            </li>
+          </ul>
         </div>
       </section>
 
