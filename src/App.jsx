@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import communityImage from './assets/images/community.jpeg'
 import connectionImage from './assets/images/connect.jpeg'
 import developmentImage from './assets/images/develop.jpeg'
-// To swap the About image, drop a new file in src/assets/images/ and update this import.
-import aboutImage from './assets/images/about.jpeg'
 import gemMark from './assets/images/gem-mark.png'
 import gemPromoVideo from './assets/videos/GEM promo video.mov'
 import { supabase, supabaseConfigError } from './lib/supabase'
@@ -37,58 +35,19 @@ const HERO_PANELS = [
   },
 ]
 
-const EXPERIENCES = [
+const EXPERIENCE_MEDIA = [
   {
-    eyebrow: 'Access',
-    title: 'Private Gatherings',
-    role: 'Member Access',
-    date: 'Year-round programming',
-    description:
-      'Small-format dinners, socials, and evenings built around real conversation, strong chemistry, and the kind of atmosphere that makes showing up feel effortless.',
-    primaryAction: { label: 'Become a member', href: '#membership' },
-    secondaryAction: { label: 'Our mission', href: '#about' },
-    video: `${gemPromoVideo}#private-gatherings`,
+    src: communityImage,
+    alt: 'Members gathered together at a GEM community event.',
   },
   {
-    eyebrow: 'Introductions',
-    title: 'Curated Introductions',
-    role: 'Relationship Design',
-    date: 'Personal and ongoing',
-    description:
-      'Intentional introductions between members with shared interests, complementary goals, and real potential for friendship, collaboration, or long-term alignment.',
-    primaryAction: { label: 'Become a member', href: '#membership' },
-    secondaryAction: { label: 'View experiences', href: '#experiences' },
-    video: `${gemPromoVideo}#curated-introductions`,
+    src: connectionImage,
+    alt: 'Members connecting during a GEM experience.',
   },
   {
-    eyebrow: 'Events',
-    title: 'Member Events',
-    role: 'Cultural Programming',
-    date: 'Seasonal calendar',
-    description:
-      'Access to invite-only experiences, cultural nights, launches, and community moments designed to feel elevated, social, and genuinely worth remembering.',
-    primaryAction: { label: 'View experiences', href: '#experiences' },
-    secondaryAction: { label: 'Become a member', href: '#membership' },
-    video: `${gemPromoVideo}#member-events`,
+    src: developmentImage,
+    alt: 'Members enjoying a GEM event together.',
   },
-  {
-    eyebrow: 'Community',
-    title: 'The Social Layer',
-    role: 'Private Network',
-    date: 'Always on',
-    description:
-      'A private layer for discovering who is gathering, what is happening next, and how the wider community is moving between in-person moments.',
-    primaryAction: { label: 'Our mission', href: '#about' },
-    secondaryAction: { label: 'Become a member', href: '#membership' },
-    video: `${gemPromoVideo}#social-layer`,
-  },
-]
-
-const ABOUT_SLIDES = [
-  { src: communityImage, caption: 'Private gatherings, with purpose.' },
-  { src: connectionImage, caption: 'Introductions made with intention.' },
-  { src: developmentImage, caption: 'Rooms built for personal growth.' },
-  { src: aboutImage, caption: 'Every person, a Gem.' },
 ]
 
 const MEMBERSHIP_INTERESTS = [
@@ -110,9 +69,8 @@ const INITIAL_FORM_DATA = {
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function App() {
-  const [cardIndex, setCardIndex] = useState(0)
+  const [carouselIndex, setCarouselIndex] = useState(0)
   const [isMembershipVisible, setIsMembershipVisible] = useState(false)
-  const [aboutSlide, setAboutSlide] = useState(0)
   const [isAboutVisible, setIsAboutVisible] = useState(false)
   const [formData, setFormData] = useState(INITIAL_FORM_DATA)
   const [fieldErrors, setFieldErrors] = useState({})
@@ -122,12 +80,7 @@ function App() {
   })
   const membershipRef = useRef(null)
   const aboutRef = useRef(null)
-  const aboutSlideCount = ABOUT_SLIDES.length
-  const cardCount = EXPERIENCES.length
-  const nextCard = () => setCardIndex((i) => (i + 1) % cardCount)
-  const prevCard = () =>
-    setCardIndex((i) => (i - 1 + cardCount) % cardCount)
-  const activeExperience = EXPERIENCES[cardIndex]
+  const activeExperienceImage = EXPERIENCE_MEDIA[carouselIndex]
 
   useEffect(() => {
     const node = membershipRef.current
@@ -165,25 +118,12 @@ function App() {
           observer.disconnect()
         }
       },
-      { threshold: 0.18, rootMargin: '0px 0px -40px 0px' }
+      { threshold: 0.25, rootMargin: '0px 0px -60px 0px' }
     )
 
     observer.observe(node)
     return () => observer.disconnect()
   }, [])
-
-  useEffect(() => {
-    const mql =
-      typeof window !== 'undefined' && window.matchMedia
-        ? window.matchMedia('(prefers-reduced-motion: reduce)')
-        : null
-    if (mql && mql.matches) return undefined
-
-    const id = setInterval(() => {
-      setAboutSlide((i) => (i + 1) % aboutSlideCount)
-    }, 6500)
-    return () => clearInterval(id)
-  }, [aboutSlideCount])
 
   const validateForm = (values) => {
     const errors = {}
@@ -369,192 +309,88 @@ function App() {
         ref={aboutRef}
       >
         <div className="about__inner">
-          <header className="about__header">
-            <p className="about__eyebrow">About</p>
-            <span className="about__rule" aria-hidden="true" />
-          </header>
-
-          <div className="about__grid">
-            <figure className="about__media">
-              <div className="about__frame">
-                {ABOUT_SLIDES.map((slide, i) => (
-                  <img
-                    key={slide.src}
-                    src={slide.src}
-                    alt=""
-                    loading="lazy"
-                    className={`about__slide${
-                      i === aboutSlide ? ' about__slide--active' : ''
-                    }`}
-                  />
-                ))}
-                <div className="about__frame-overlay" aria-hidden="true" />
-                <figcaption className="about__caption">
-                  {ABOUT_SLIDES[aboutSlide].caption}
-                </figcaption>
-              </div>
-              <div
-                className="about__indicators"
-                role="tablist"
-                aria-label="About slides"
-              >
-                {ABOUT_SLIDES.map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    role="tab"
-                    aria-selected={i === aboutSlide}
-                    aria-label={`Show slide ${i + 1}`}
-                    className={`about__indicator${
-                      i === aboutSlide ? ' about__indicator--active' : ''
-                    }`}
-                    onClick={() => setAboutSlide(i)}
-                  >
-                    {String(i + 1).padStart(2, '0')}
-                  </button>
-                ))}
-              </div>
-            </figure>
-
-            <div className="about__copy">
-              <h2 className="about__heading">
-                A community that shines
-                <br />
-                brighter together.
-              </h2>
-              <p className="about__sub">Every person is a Gem.</p>
-              <p className="about__body-text">
-                The Gem Network creates intentional spaces for people to
-                connect, grow, and be seen. Through private gatherings,
-                curated introductions, and shared experiences, we bring
-                together people who value meaningful relationships over
-                surface-level networking.
-              </p>
-              <p className="about__emphasis">
-                Less networking. More belonging.
-              </p>
-            </div>
+          <h2 className="about__heading">
+            <span className="about__heading-line">Our</span>
+            <span className="about__heading-line">Mission</span>
+          </h2>
+          <div className="about__content">
+            <p className="about__statement">
+              <span className="about__statement-line">Everyone is a Gem.</span>
+              <span className="about__statement-line about__statement-line--accent">
+                Let it shine.
+              </span>
+            </p>
+            <p className="about__body">
+              A community where ambition meets authenticity — built for
+              people who value real connection over surface-level
+              networking.
+            </p>
           </div>
-
-          <ul className="about__pillars">
-            <li className="about__pillar">
-              <span className="about__pillar-num">01</span>
-              <h3 className="about__pillar-title">Community</h3>
-              <p className="about__pillar-body">
-                Private gatherings with purpose.
-              </p>
-            </li>
-            <li className="about__pillar">
-              <span className="about__pillar-num">02</span>
-              <h3 className="about__pillar-title">Connection</h3>
-              <p className="about__pillar-body">
-                Introductions that feel intentional.
-              </p>
-            </li>
-            <li className="about__pillar">
-              <span className="about__pillar-num">03</span>
-              <h3 className="about__pillar-title">Development</h3>
-              <p className="about__pillar-body">
-                Spaces built for personal growth.
-              </p>
-            </li>
-          </ul>
         </div>
       </section>
 
       <section className="experiences" id="experiences">
-        <video
-          key={activeExperience.video}
-          className="experiences__video"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-        >
-          <source src={activeExperience.video} />
-        </video>
-        <div className="experiences__overlay" aria-hidden="true" />
-        <div className="experiences__grain" aria-hidden="true" />
-
         <div className="experiences__content">
-          <header className="experiences__intro">
-            <p className="experiences__kicker">Experiences</p>
-            <h2 className="experiences__heading">{activeExperience.title}</h2>
-            <div className="experiences__meta">
-              <span>{activeExperience.eyebrow}</span>
-              <span className="experiences__meta-dot" aria-hidden="true" />
-              <span>{activeExperience.role}</span>
-              <span className="experiences__meta-dot" aria-hidden="true" />
-              <span>{activeExperience.date}</span>
-            </div>
-          </header>
-
-          <div className="experiences__stage">
-            <article key={cardIndex} className="slide">
-              <p className="slide__body">{activeExperience.description}</p>
-              <div className="experiences__actions">
-                <a
-                  className="experiences__action experiences__action--primary"
-                  href={activeExperience.primaryAction.href}
-                >
-                  {activeExperience.primaryAction.label}
-                </a>
-                <a
-                  className="experiences__action experiences__action--secondary"
-                  href={activeExperience.secondaryAction.href}
-                >
-                  {activeExperience.secondaryAction.label}
-                </a>
+          <div className="experiences__media-grid">
+            <article className="experiences__panel experiences__panel--carousel">
+              <div
+                className="experiences__pagination"
+                aria-label="Experience image carousel"
+              >
+                {EXPERIENCE_MEDIA.map((item, index) => (
+                  <button
+                    key={item.src}
+                    type="button"
+                    aria-pressed={carouselIndex === index}
+                    aria-label={`Show experience image ${index + 1}`}
+                    className={`experiences__pagination-button ${
+                      carouselIndex === index
+                        ? 'experiences__pagination-button--active'
+                        : ''
+                    }`}
+                    onClick={() => setCarouselIndex(index)}
+                  >
+                    {String(index + 1).padStart(2, '0')}
+                  </button>
+                ))}
               </div>
+              <img
+                key={activeExperienceImage.src}
+                className="experiences__image"
+                src={activeExperienceImage.src}
+                alt={activeExperienceImage.alt}
+                loading="lazy"
+              />
+              <div className="experiences__panel-overlay" aria-hidden="true" />
+              <p className="experiences__panel-label">Work hard.</p>
+            </article>
+
+            <article className="experiences__panel experiences__panel--video">
+              <video
+                className="experiences__video"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+              >
+                <source src={gemPromoVideo} />
+              </video>
+              <div className="experiences__panel-overlay" aria-hidden="true" />
+              <p className="experiences__panel-label">Play hard.</p>
             </article>
           </div>
 
-          <button
-            type="button"
-            className="experiences__nav experiences__nav--prev"
-            onClick={prevCard}
-            aria-label="Previous experience"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M15 6l-6 6 6 6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          <p
-            className="experiences__counter"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            <span>{String(cardIndex + 1).padStart(2, '0')}</span>
-            <span className="experiences__counter-slash" aria-hidden="true">
-              /
-            </span>
-            <span>{String(cardCount).padStart(2, '0')}</span>
-          </p>
-          <button
-            type="button"
-            className="experiences__nav experiences__nav--next"
-            onClick={nextCard}
-            aria-label="Next experience"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M9 6l6 6-6 6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+          <div className="experiences__editorial">
+            <p className="experiences__kicker">Experiences</p>
+            <p className="experiences__body">
+              From ambitious days to unforgettable nights, GEM creates
+              experiences that move naturally between growth, culture, and
+              connection. Members gather through private events, thoughtful
+              introductions, and elevated moments designed to feel social,
+              energizing, and genuinely worth showing up for.
+            </p>
+          </div>
         </div>
       </section>
 
