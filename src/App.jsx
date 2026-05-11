@@ -3,6 +3,7 @@ import communityImage from './assets/images/community.jpeg'
 import connectionImage from './assets/images/connect.jpeg'
 import developmentImage from './assets/images/develop.jpeg'
 import gemMark from './assets/images/gem-mark.png'
+import workHardImage from './assets/images/workhard1.jpeg'
 import gemPromoVideo from './assets/videos/GEM promo video.mov'
 import { supabase, supabaseConfigError } from './lib/supabase'
 import './App.css'
@@ -37,16 +38,12 @@ const HERO_PANELS = [
 
 const EXPERIENCE_MEDIA = [
   {
-    src: communityImage,
-    alt: 'Members gathered together at a GEM community event.',
-  },
-  {
-    src: connectionImage,
-    alt: 'Members connecting during a GEM experience.',
+    src: workHardImage,
+    alt: 'Members gathered for a GEM work hard experience.',
   },
   {
     src: developmentImage,
-    alt: 'Members enjoying a GEM event together.',
+    alt: 'Members participating in a GEM development experience.',
   },
 ]
 
@@ -384,11 +381,8 @@ function App() {
           <div className="experiences__editorial">
             <p className="experiences__kicker">Experiences</p>
             <p className="experiences__body">
-              From ambitious days to unforgettable nights, GEM creates
-              experiences that move naturally between growth, culture, and
-              connection. Members gather through private events, thoughtful
-              introductions, and elevated moments designed to feel social,
-              energizing, and genuinely worth showing up for.
+              GEM is built on the belief that professional growth should feel
+              personal, social, and energizing.
             </p>
           </div>
         </div>
