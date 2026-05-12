@@ -47,28 +47,21 @@ const EXPERIENCE_MEDIA = [
   },
 ]
 
-const MEMBERSHIP_INTERESTS = [
-  'Community',
-  'Connection',
-  'Development',
-  'Events',
-  'Leadership',
-  'Other',
-]
-
 const INITIAL_FORM_DATA = {
   firstName: '',
   lastName: '',
   email: '',
-  interest: '',
+  phone: '',
 }
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const PHONE_DIGIT_PATTERN = /\D/g
 
 function App() {
   const [carouselIndex, setCarouselIndex] = useState(0)
   const [isMembershipVisible, setIsMembershipVisible] = useState(false)
-  const [isAboutVisible, setIsAboutVisible] = useState(false)
+  const [isAboutVisible, setIsAboutVisible] = useState(true)
+  const [revealedHeroPanels, setRevealedHeroPanels] = useState([])
   const [formData, setFormData] = useState(INITIAL_FORM_DATA)
   const [fieldErrors, setFieldErrors] = useState({})
   const [submitState, setSubmitState] = useState({
@@ -122,6 +115,16 @@ function App() {
     return () => observer.disconnect()
   }, [])
 
+  const revealHeroPanel = (panelTitle) => {
+    setRevealedHeroPanels((currentPanels) => {
+      if (currentPanels.includes(panelTitle)) {
+        return currentPanels
+      }
+
+      return [...currentPanels, panelTitle]
+    })
+  }
+
   const validateForm = (values) => {
     const errors = {}
 
@@ -139,8 +142,12 @@ function App() {
       errors.email = 'Please enter a valid email address.'
     }
 
-    if (!values.interest) {
-      errors.interest = 'Please select an interest.'
+    const phoneDigits = values.phone.replace(PHONE_DIGIT_PATTERN, '')
+
+    if (!values.phone.trim()) {
+      errors.phone = 'Phone number is required.'
+    } else if (phoneDigits.length < 10) {
+      errors.phone = 'Please enter a valid phone number.'
     }
 
     return errors
@@ -179,7 +186,7 @@ function App() {
       firstName: formData.firstName.trim(),
       lastName: formData.lastName.trim(),
       email: formData.email.trim().toLowerCase(),
-      interest: formData.interest,
+      phone: formData.phone.trim(),
     }
 
     const errors = validateForm(normalizedFormData)
@@ -213,7 +220,7 @@ function App() {
       first_name: normalizedFormData.firstName,
       last_name: normalizedFormData.lastName,
       email: normalizedFormData.email,
-      interest: normalizedFormData.interest,
+      phone_number: normalizedFormData.phone,
       source: 'landing_page',
     })
 
@@ -262,9 +269,15 @@ function App() {
           {HERO_PANELS.map((panel) => (
             <a
               key={panel.title}
-              className="hero-panel"
+              className={`hero-panel${
+                revealedHeroPanels.includes(panel.title)
+                  ? ' hero-panel--revealed'
+                  : ''
+              }`}
               href={panel.href}
               aria-label={`${panel.title}. ${panel.description}`}
+              onMouseEnter={() => revealHeroPanel(panel.title)}
+              onFocus={() => revealHeroPanel(panel.title)}
             >
               <div
                 className="hero-panel__image"
@@ -306,23 +319,53 @@ function App() {
         ref={aboutRef}
       >
         <div className="about__inner">
-          <h2 className="about__heading">
-            <span className="about__heading-line">Our</span>
-            <span className="about__heading-line">Mission</span>
-          </h2>
+          <h2 className="sr-only">Our Mission</h2>
+          <p className="about__statement">
+            <span className="about__statement-line">Everyone is a Gem.</span>
+            <span className="about__statement-line about__statement-line--accent">
+              Let it shine.
+            </span>
+          </p>
           <div className="about__content">
-            <p className="about__statement">
-              <span className="about__statement-line">Everyone is a Gem.</span>
-              <span className="about__statement-line about__statement-line--accent">
-                Let it shine.
-              </span>
-            </p>
             <p className="about__body">
               A community where ambition meets authenticity — built for
               people who value real connection over surface-level
               networking.
             </p>
+            <div className="about__actions">
+              <a className="about__cta" href="#about-divider">
+                <span>Read More</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M5 12h14M13 6l6 6-6 6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </a>
+              <a className="about__cta" href="#membership">
+                <span>Meet the Founder</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M5 12h14M13 6l6 6-6 6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </a>
+            </div>
           </div>
+          <div
+            className="about__divider"
+            id="about-divider"
+            aria-hidden="true"
+          />
         </div>
       </section>
 
@@ -394,7 +437,6 @@ function App() {
         id="membership"
       >
         <div className="membership__inner">
-          <p className="membership__eyebrow">Membership</p>
           <div className="membership__content">
             <span
               className="membership__mark"
@@ -481,30 +523,27 @@ function App() {
                 </label>
 
                 <label className="membership-form__field membership-form__field--full">
-                  <span className="sr-only">Interest</span>
-                  <select
-                    name="interest"
-                    value={formData.interest}
+                  <span className="sr-only">Phone Number</span>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
                     onChange={handleChange}
-                    aria-invalid={Boolean(fieldErrors.interest)}
+                    autoComplete="tel"
+                    inputMode="tel"
+                    placeholder="Phone Number"
+                    aria-invalid={Boolean(fieldErrors.phone)}
                     aria-describedby={
-                      fieldErrors.interest ? 'interest-error' : undefined
+                      fieldErrors.phone ? 'phone-error' : undefined
                     }
                     required
-                  >
-                    <option value="">Interest</option>
-                    {MEMBERSHIP_INTERESTS.map((interest) => (
-                      <option key={interest} value={interest}>
-                        {interest}
-                      </option>
-                    ))}
-                  </select>
-                  {fieldErrors.interest ? (
+                  />
+                  {fieldErrors.phone ? (
                     <span
                       className="membership-form__error"
-                      id="interest-error"
+                      id="phone-error"
                     >
-                      {fieldErrors.interest}
+                      {fieldErrors.phone}
                     </span>
                   ) : null}
                 </label>
@@ -516,7 +555,7 @@ function App() {
                   className="membership-form__submit"
                   disabled={submitState.status === 'loading'}
                 >
-                  {submitState.status === 'loading' ? 'Applying...' : 'Apply'}
+                  {submitState.status === 'loading' ? 'Submitting...' : 'Get started'}
                 </button>
                 {submitState.message ? (
                   <p
