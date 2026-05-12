@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import communityImage from './assets/images/community.jpeg'
 import connectionImage from './assets/images/connect.jpeg'
 import developmentImage from './assets/images/develop.jpeg'
+import aboutImage from './assets/images/about.jpeg'
 import gemMark from './assets/images/gem-mark.png'
 import workHardImage from './assets/images/workhard1.jpeg'
 import gemPromoVideo from './assets/videos/GEM promo video.mov'
@@ -13,7 +14,7 @@ const HERO_PANELS = [
   {
     title: 'Community',
     description:
-      'A curated circle of members brought together through shared ambition, taste, and real-world experiences.',
+      'A curated circle of people brought together through shared ambition, taste, and real-world experiences.',
     href: '#about',
     cta: 'Our mission',
     image: communityImage,
@@ -29,9 +30,9 @@ const HERO_PANELS = [
   {
     title: 'Development',
     description:
-      'A space for members to grow socially, creatively, and professionally through access, collaboration, and opportunity.',
+      'A space to grow socially, creatively, and professionally through access, collaboration, and opportunity.',
     href: '#membership',
-    cta: 'Become a member',
+    cta: 'Join us',
     image: developmentImage,
   },
 ]
@@ -39,13 +40,22 @@ const HERO_PANELS = [
 const EXPERIENCE_MEDIA = [
   {
     src: workHardImage,
-    alt: 'Members gathered for a GEM work hard experience.',
+    alt: 'Guests gathered for a GEM work hard experience.',
+    eventName: 'Event Name',
+    eventDate: 'Month DD, YYYY',
   },
   {
     src: developmentImage,
-    alt: 'Members participating in a GEM development experience.',
+    alt: 'Guests participating in a GEM development experience.',
+    eventName: 'Event Name',
+    eventDate: 'Month DD, YYYY',
   },
 ]
+
+const EXPERIENCE_VIDEO_CAPTION = {
+  eventName: 'Event Name',
+  eventDate: 'Month DD, YYYY',
+}
 
 const INITIAL_FORM_DATA = {
   firstName: '',
@@ -248,10 +258,10 @@ function App() {
   return (
     <div className="page">
       <header className="nav">
-        <a className="brand" href="#hero" aria-label="GEM Social Club">
+        <a className="brand" href="#hero" aria-label="GEM Network">
           <span className="brand__copy">
             <span className="brand__name">GEM</span>
-            <span className="brand__tag">Social Club</span>
+            <span className="brand__tag">Network</span>
           </span>
           <span
             className="brand__icon"
@@ -288,9 +298,6 @@ function App() {
               <div className="hero-panel__content">
                 <div className="hero-panel__body">
                   <span className="hero-panel__title">{panel.title}</span>
-                  <span className="hero-panel__description">
-                    {panel.description}
-                  </span>
                 </div>
                 {panel.cta ? (
                   <span className="hero-panel__cta" aria-hidden="true">
@@ -366,6 +373,110 @@ function App() {
             id="about-divider"
             aria-hidden="true"
           />
+          <div className="about__detail">
+            <div className="about__overview">
+              <p className="about__eyebrow">ABOUT THE GEM NETWORK</p>
+              <h3 className="about__headline">Where ambition meets community.</h3>
+              <p className="about__copy">
+                The Gem Network brings ambitious people together through
+                in-person networking, career development, and community-driven
+                experiences designed to help people grow professionally and
+                personally.
+              </p>
+              <div className="about__social">
+                <div className="about__social-copy">
+                  <p className="about__social-heading">Stay Connected</p>
+                  <p className="about__social-body">
+                    Follow us for events, highlights, and opportunities.
+                  </p>
+                </div>
+                <div className="about__social-links">
+                  <a
+                    className="about__social-link"
+                    href="https://www.instagram.com/thegemnetwork/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Follow The Gem Network on Instagram"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M7.75 3h8.5A4.75 4.75 0 0 1 21 7.75v8.5A4.75 4.75 0 0 1 16.25 21h-8.5A4.75 4.75 0 0 1 3 16.25v-8.5A4.75 4.75 0 0 1 7.75 3Z"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                      />
+                      <path
+                        d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0-6 0Z"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                      />
+                      <path
+                        d="M16.9 6.9h.01"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <span>Instagram</span>
+                  </a>
+                  <a
+                    className="about__social-link"
+                    href="https://www.linkedin.com/company/thegemnetwork/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Follow The Gem Network on LinkedIn"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M7.25 9.25V17"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
+                      <path
+                        d="M7.25 7a1.15 1.15 0 1 0 0-.01"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M11 17v-4.25c0-1.52 1.23-2.75 2.75-2.75s2.75 1.23 2.75 2.75V17"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M11 10.75V17"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <span>LinkedIn</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="about__aside">
+              <figure className="about__image-card">
+                <img
+                  className="about__image"
+                  src={aboutImage}
+                  alt="People of The Gem Network gathering together."
+                  loading="lazy"
+                />
+              </figure>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -402,6 +513,10 @@ function App() {
                 loading="lazy"
               />
               <div className="experiences__panel-overlay" aria-hidden="true" />
+              <p className="experiences__panel-caption">
+                <span>{activeExperienceImage.eventName}</span>
+                <span>{activeExperienceImage.eventDate}</span>
+              </p>
               <p className="experiences__panel-label">Work hard.</p>
             </article>
 
@@ -417,16 +532,35 @@ function App() {
                 <source src={gemPromoVideo} />
               </video>
               <div className="experiences__panel-overlay" aria-hidden="true" />
-              <p className="experiences__panel-label">Play hard.</p>
+              <p className="experiences__panel-caption">
+                <span>{EXPERIENCE_VIDEO_CAPTION.eventName}</span>
+                <span>{EXPERIENCE_VIDEO_CAPTION.eventDate}</span>
+              </p>
+              <p className="experiences__panel-label">Play harder.</p>
             </article>
           </div>
 
           <div className="experiences__editorial">
             <p className="experiences__kicker">Experiences</p>
-            <p className="experiences__body">
-              GEM is built on the belief that professional growth should feel
-              personal, social, and energizing.
-            </p>
+            <div className="experiences__copy">
+              <p className="experiences__body">
+                GEM is built on the belief that professional growth should feel
+                personal, social, and energizing.
+              </p>
+              <a className="experiences__cta" href="#membership">
+                <span>View upcoming events</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M5 12h14M13 6l6 6-6 6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </a>
+            </div>
           </div>
         </div>
       </section>
